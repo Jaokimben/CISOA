@@ -1,14 +1,20 @@
 {
   "build": {
     "builder": "docker",
-    "dockerfile": "backend/Dockerfile"
+    "dockerfilePath": "backend/Dockerfile"
   },
   "services": [
     {
       "name": "frontend",
       "build": {
-        "dockerfile": "frontend/Dockerfile"
-      }
+        "dockerfilePath": "frontend/Dockerfile"
+      },
+      "ports": [
+        {
+          "port": 3000,
+          "protocol": "TCP"
+        }
+      ]
     }
   ],
   "env": {
