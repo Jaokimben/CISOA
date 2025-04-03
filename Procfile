@@ -1,0 +1,1 @@
+web: python manage.py migrate && gunicorn ciso_assistant.wsgi --workers 4 --timeout 120 --bind 0.0.0.0:$PORT
