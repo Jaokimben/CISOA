@@ -1,13 +1,16 @@
 {
   "build": {
-    "builder": "nixpacks",
-    "config": {
-      "startCommand": "python manage.py migrate && gunicorn ciso_assistant.wsgi --workers 4 --timeout 120 --bind 0.0.0.0:$PORT"
+    "builder": "docker",
+    "dockerfile": "backend/Dockerfile"
+  },
+  "services": [
+    {
+      "name": "frontend",
+      "build": {
+        "dockerfile": "frontend/Dockerfile"
+      }
     }
-  },
-  "deploy": {
-    "startCommand": "python manage.py migrate && gunicorn ciso_assistant.wsgi --workers 4 --timeout 120 --bind 0.0.0.0:$PORT"
-  },
+  ],
   "env": {
     "DISABLE_COLLECTSTATIC": "1",
     "DEBUG": "False",
