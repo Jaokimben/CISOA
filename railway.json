@@ -1,17 +1,10 @@
 {
-  "dockerfilePath": "backend/Dockerfile",
-  "services": [
-    {
-      "name": "frontend",
-      "dockerfilePath": "frontend/Dockerfile",
-      "ports": [
-        {
-          "port": 3000,
-          "protocol": "TCP"
-        }
-      ]
+  "build": {
+    "builder": "nixpacks",
+    "config": {
+      "startCommand": "python manage.py migrate && gunicorn ciso_assistant.wsgi --workers 4 --timeout 120 --bind 0.0.0.0:$PORT"
     }
-  ],
+  },
   "env": {
     "DISABLE_COLLECTSTATIC": "1",
     "DEBUG": "False",
