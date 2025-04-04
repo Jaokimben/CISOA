@@ -7,8 +7,13 @@
 ## Installation
 1. Install flyctl:
 ```bash
-# Windows (PowerShell):
+# Windows (PowerShell - Run as Administrator):
 iwr https://fly.io/install.ps1 -useb | iex
+
+# If you get permission errors:
+1. Open PowerShell as Administrator
+2. Run: Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+3. Run: iwr https://fly.io/install.ps1 -useb | iex
 
 # Mac/Linux:
 curl -L https://fly.io/install.sh | sh

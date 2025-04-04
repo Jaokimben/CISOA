@@ -2,7 +2,7 @@ app = "ciso-assistant"
 
 [build]
   builder = "dockerfile"
-  builder = "./backend/Dockerfile"
+  dockerfile = "./backend/Dockerfile"
 
 [env]
   DEBUG = "False"
