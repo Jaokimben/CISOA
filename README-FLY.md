@@ -21,7 +21,15 @@ curl -L https://fly.io/install.sh | sh
 
 ## Deployment Steps
 
-Note: This deployment uses Docker for building the application.
+Note: This deployment uses Paketo buildpacks for building the application.
+
+If you encounter build issues:
+1. Try cleaning the build cache:
+```bash
+flyctl builds purge
+```
+2. Ensure Docker is running if building locally
+3. Check available disk space
 
 1. Create the Fly.io application:
 ```bash

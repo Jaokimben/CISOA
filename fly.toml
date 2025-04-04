@@ -1,7 +1,9 @@
 app = "ciso-assistant"
 
 [build]
-  builder = "dockerfile"
+  builder = "paketobuildpacks/builder:base"
+  buildpacks = ["gcr.io/paketo-buildpacks/python", "gcr.io/paketo-buildpacks/nodejs"]
+  build = "backend"
   dockerfile = "backend/Dockerfile"
 
 [env]
