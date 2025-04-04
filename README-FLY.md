@@ -1,10 +1,22 @@
 # CISO Assistant Deployment on Fly.io
 
 ## Prerequisites
-- Fly.io account and CLI installed (`flyctl`)
+- Fly.io account
 - Docker (if using local builds)
 
+## Installation
+1. Install flyctl:
+```bash
+# Windows (PowerShell):
+iwr https://fly.io/install.ps1 -useb | iex
+
+# Mac/Linux:
+curl -L https://fly.io/install.sh | sh
+```
+
 ## Deployment Steps
+
+Note: This deployment uses Docker for building the application.
 
 1. Create the Fly.io application:
 ```bash

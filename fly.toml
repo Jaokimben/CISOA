@@ -1,7 +1,8 @@
 app = "ciso-assistant"
 
 [build]
-  builder = "nixpacks"
+  builder = "dockerfile"
+  builder = "./backend/Dockerfile"
 
 [env]
   DEBUG = "False"
