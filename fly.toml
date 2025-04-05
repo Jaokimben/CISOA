@@ -3,9 +3,10 @@ app = "saas-dqokpw"
 [build]
   builder = "paketobuildpacks/builder:base"
   buildpacks = ["gcr.io/paketo-buildpacks/python", "gcr.io/paketo-buildpacks/nodejs"]
-  build = "backend"
+  build = "."
   BP_OCI_DOCUMENTATION = "https://github.com/CISO-Assistant/CISO-Assistant"
   BP_OCI_CREATED = "now"
+  BP_NODE_PROJECT_PATH = "frontend"
 
 [env]
   DEBUG = "False"
