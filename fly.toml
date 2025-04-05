@@ -10,6 +10,8 @@ app = "ciso-assistant"
   DEBUG = "False"
   ALLOWED_HOSTS = "*"
   DISABLE_COLLECTSTATIC = "1"
+  BP_NODE_PROJECT_PATH = "frontend"
+  BP_NODE_PACKAGE_MANAGER = "pnpm"
 
 [http_service]
   internal_port = 8000
