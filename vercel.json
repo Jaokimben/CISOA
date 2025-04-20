@@ -6,7 +6,9 @@
       "use": "@vercel/node",
       "config": {
         "nodeVersion": "20.x",
-        "installCommand": "rm -f pnpm-lock.yaml && npm install --package-lock-only && npm install",
+        "installCommand": "rm -rf node_modules pnpm-lock.yaml && npm install --package-lock-only --force && npm install",
+        "forceNodeVersion": "20.x",
+        "npmVersion": "10.x",
         "runtime": "nodejs20.x",
         "memory": 3008,
         "maxDuration": 30
