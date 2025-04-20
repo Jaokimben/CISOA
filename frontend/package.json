@@ -17,7 +17,7 @@
 		"coverage": "vitest run --coverage",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"postinstall": "paraglide-js compile --project ./project.inlang",
+		"postinstall": "rm -f pnpm-lock.yaml && npm install && paraglide-js compile --project ./project.inlang",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
 	},
