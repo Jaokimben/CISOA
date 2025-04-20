@@ -3,7 +3,7 @@
   "builds": [
     {
       "src": "frontend/package.json",
-      "use": "@sveltejs/vercel",
+      "use": "@vercel/node",
       "config": {
         "runtime": "nodejs20.x",
         "memory": 3008,
