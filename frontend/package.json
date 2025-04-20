@@ -3,10 +3,6 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"preinstall": "rm -f pnpm-lock.yaml",
-		"postinstall": "rm -rf node_modules/.pnpm && paraglide-js compile --project ./project.inlang"
-	},
-	"scripts": {
 		"prepare": "svelte-kit sync",
 		"dev": "vite dev",
 		"build": "paraglide-js compile --project ./project.inlang && vite build",
@@ -21,7 +17,7 @@
 		"coverage": "vitest run --coverage",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"postinstall": "rm -f pnpm-lock.yaml && npm install && paraglide-js compile --project ./project.inlang",
+		"postinstall": "paraglide-js compile --project ./project.inlang",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build"
 	},
