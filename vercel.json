@@ -5,6 +5,7 @@
       "src": "frontend/package.json",
       "use": "@vercel/node",
       "config": {
+        "installCommand": "pnpm install",
         "runtime": "nodejs20.x",
         "memory": 3008,
         "maxDuration": 30
