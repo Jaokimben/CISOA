@@ -6,7 +6,7 @@
 		"prepare": "pnpm install && svelte-kit sync",
 		"dev": "vite dev",
 		"build": "paraglide-js compile --project ./project.inlang && vite build",
-		"vercel-build": "pnpm install && pnpm run build",
+		"vercel-build": "pnpm install --frozen-lockfile=false || pnpm install --force && pnpm run build",
 		"preview": "vite preview",
 		"start": "vite preview --host 0.0.0.0 --port 3000",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
