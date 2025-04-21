@@ -35,5 +35,14 @@
   "env": {
     "ENABLE_VC_BUILD": "true"
   },
-  "outputDirectory": "frontend/build"
+  "outputDirectory": "frontend/.svelte-kit/output/client",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate"
+      }
+    }
+  ]
 }
