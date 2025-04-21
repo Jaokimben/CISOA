@@ -25,7 +25,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "frontend",
+      "dest": "/",
       "headers": {
         "cache-control": "public, max-age=0, must-revalidate"
       }
