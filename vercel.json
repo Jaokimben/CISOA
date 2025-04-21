@@ -3,12 +3,13 @@
   "builds": [
     {
       "src": "frontend/package.json",
-      "use": "@vercel/node",
+      "use": "@vercel/sveltekit",
       "config": {
+        "buildCommand": "pnpm run vercel-build",
         "nodeVersion": "20.x",
-        "installCommand": "rm -rf node_modules pnpm-lock.yaml && npm install --package-lock-only --force && npm install",
+        "installCommand": "rm -rf node_modules pnpm-lock.yaml && pnpm install --frozen-lockfile",
         "forceNodeVersion": "20.x",
-        "npmVersion": "10.x",
+        "pnpmVersion": "8.x",
         "runtime": "nodejs20.x",
         "memory": 3008,
         "maxDuration": 30
