@@ -9,7 +9,9 @@ const config = {
 
 	kit: {
 		// adapter-auto will automatically choose the correct adapter for Vercel
-		adapter: adapter(),
+		adapter: adapter({
+			runtime: 'nodejs20.x'
+		}),
 
 		alias: {
 			$paraglide: './src/paraglide/'
