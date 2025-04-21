@@ -3,9 +3,9 @@
   "builds": [
     {
       "src": "frontend/package.json",
-      "use": "@vercel/sveltekit",
+      "use": "@vercel/node",
       "config": {
-        "buildCommand": "pnpm run vercel-build",
+        "installCommand": "pnpm install --frozen-lockfile",
         "nodeVersion": "20.x",
         "installCommand": "rm -rf node_modules pnpm-lock.yaml && pnpm install --frozen-lockfile",
         "forceNodeVersion": "20.x",
