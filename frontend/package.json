@@ -3,10 +3,10 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"prepare": "svelte-kit sync",
+		"prepare": "pnpm install && svelte-kit sync",
 		"dev": "vite dev",
 		"build": "paraglide-js compile --project ./project.inlang && vite build",
-		"vercel-build": "pnpm run build",
+		"vercel-build": "pnpm install && pnpm run build",
 		"preview": "vite preview",
 		"start": "vite preview --host 0.0.0.0 --port 3000",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
