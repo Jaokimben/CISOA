@@ -14,18 +14,18 @@ COPY backend .
 # Frontend build stage
 FROM node:18 as frontend
 
-WORKDIR /app/frontend
+WORKDIR /app
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN npm install -g pnpm && pnpm install
 
 COPY frontend .
-RUN pnpm build
+RUN pnpm run build
 
 # Final stage
 FROM base
 
 COPY --from=backend /app /app/backend
-COPY --from=frontend /app/frontend/dist /app/frontend/dist
+COPY --from=frontend /app/build /app/frontend
 
 WORKDIR /app/backend
 EXPOSE 8000
