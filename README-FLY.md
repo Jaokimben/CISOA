@@ -73,10 +73,22 @@ The application provides a health check endpoint at `/health/` that returns:
 {"status": "ok"}
 ```
 
-### Logs
-View application logs:
+### Log Access
+Application logs are stored in `/var/log/ciso-assistant.log` and available via:
+
+1. Stream live logs:
 ```bash
 flyctl logs
+```
+
+2. Download full log file:
+```bash
+flyctl ssh console -C "cat /var/log/ciso-assistant.log" > ciso-assistant.log
+```
+
+3. View recent errors:
+```bash
+flyctl ssh console -C "grep ERROR /var/log/ciso-assistant.log | tail -n 50"
 ```
 
 ### Verify Deployment

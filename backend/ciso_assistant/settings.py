@@ -57,10 +57,21 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": LOG_FORMAT,
+            "stream": "ext://sys.stdout"  # Explicitly use stdout
         },
+        "file": {
+            "level": "INFO",
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": "/var/log/ciso-assistant.log",
+            "formatter": "json",
+        }
     },
     "loggers": {
-        "": {"handlers": ["console"], "level": LOG_LEVEL},
+        "": {
+            "handlers": ["console", "file"],
+            "level": LOG_LEVEL,
+            "propagate": True
+        },
     },
 }
 
