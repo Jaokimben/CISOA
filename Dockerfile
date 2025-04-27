@@ -15,8 +15,8 @@ COPY backend .
 FROM node:18 as frontend
 
 WORKDIR /app
-COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install
+COPY frontend/package.json ./
+RUN npm install -g pnpm && pnpm install --force
 
 COPY frontend .
 RUN pnpm run build
