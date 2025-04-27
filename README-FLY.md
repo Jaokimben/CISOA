@@ -66,6 +66,25 @@ flyctl scale count 2  # Scale to 2 instances
 ```
 
 ## Monitoring
-View logs:
+
+### Health Checks
+The application provides a health check endpoint at `/health/` that returns:
+```json
+{"status": "ok"}
+```
+
+### Logs
+View application logs:
 ```bash
 flyctl logs
+```
+
+### Verify Deployment
+Check deployment status:
+```bash
+flyctl status
+```
+
+Verify health checks:
+```bash
+flyctl checks list
