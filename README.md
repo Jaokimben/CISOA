@@ -262,14 +262,26 @@ Join our [open Discord community](https://discord.gg/qvkaMdQ8da) to interact wit
 
 ## Deployment Options 🚀
 
-### Railway.app Deployment (Recommended Free Tier)
+### Cloud Deployment Notes
+
+**For all platforms (Railway.app, Render.com, etc):**
+
+1. The deployment may take several minutes to initialize the database
+2. Required system dependencies are now included in the Docker image
+3. The container includes a health check for database readiness
+
+**Railway.app Deployment (Recommended Free Tier):**
 
 1. Create a Railway account at [railway.app](https://railway.app)
 2. Start a new project and select "Deploy from GitHub"
 3. Connect your GitHub repository
 4. Railway will automatically detect the Docker setup
-5. Configure environment variables as needed (refer to backend/.env.example)
+5. Configure environment variables (refer to backend/.env.example)
 6. Deploy!
+
+**Render.com Deployment:**
+- Follow same steps as Railway
+- May need to increase build timeout (default is 10min)
 
 ### Local Docker Deployment
 
