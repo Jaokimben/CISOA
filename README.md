@@ -260,12 +260,33 @@ Join our [open Discord community](https://discord.gg/qvkaMdQ8da) to interact wit
 
 > The fastest and easiest way to get started is through the [free trial of cloud instance available here](https://intuitem.com/trial).
 
-## Testing locally 🚀
+## Deployment Options 🚀
+
+### Railway.app Deployment (Recommended Free Tier)
+
+1. Create a Railway account at [railway.app](https://railway.app)
+2. Start a new project and select "Deploy from GitHub"
+3. Connect your GitHub repository
+4. Railway will automatically detect the Docker setup
+5. Configure environment variables as needed (refer to backend/.env.example)
+6. Deploy!
+
+### Local Docker Deployment
 
 To run CISO Assistant locally in a straightforward way, you can use Docker compose.
 
 > [!NOTE]
-> Fly.io deployment is not currently supported as this project is designed for local Docker-compose or cloud trial usage.
+> Deployment Notes:
+> - This project requires direct Docker deployment using the provided Dockerfile and docker-compose setup
+> - Build tools like Nixpacks are not supported
+> - Fly.io deployment is not currently supported
+>
+> Free Hosting Options:
+> - **Recommended**: [Official Cloud Trial](https://intuitem.com/trial) (fully managed)
+> - **Best Alternative**: Railway.app (free tier with direct Docker support)
+> - **Other Option**: Render.com (free tier for Docker projects)
+>
+> For production use, we recommend the official cloud version or self-hosting with Docker.
 
 0. Update docker
 
