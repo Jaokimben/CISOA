@@ -13,5 +13,5 @@ RUN pip install poetry==2.0.1 && \
 # Copy rest of backend
 COPY backend/ .
 
-EXPOSE 8000
+EXPOSE 8080
 ENTRYPOINT ["poetry", "run", "bash", "startup.sh"]
