@@ -264,6 +264,9 @@ Join our [open Discord community](https://discord.gg/qvkaMdQ8da) to interact wit
 
 To run CISO Assistant locally in a straightforward way, you can use Docker compose.
 
+> [!NOTE]
+> Fly.io deployment is not currently supported as this project is designed for local Docker-compose or cloud trial usage.
+
 0. Update docker
 
 Make sure you have a recent version of docker (>= 27.0).
