@@ -6,10 +6,12 @@
 	import { createEventDispatcher } from 'svelte';
 	import MultiSelect from 'svelte-multiselect';
 	import { getContext, onDestroy } from 'svelte';
+	import * as m from '$paraglide/messages.js';
+	import { toCamelCase } from '$lib/utils/locales';
 
 	interface Option {
 		label: string;
-		value: string;
+		value: string | number;
 		suggested?: boolean;
 	}
 
@@ -18,7 +20,9 @@
 	export let fieldContext: FieldContext = 'form-input';
 
 	export let label: string | undefined = undefined;
+	export let baseClass = '';
 	export let field: string;
+	export let valuePath = field; // the place where the value is stored in the form. This is useful for nested objects
 	export let helpText: string | undefined = undefined;
 
 	export let form: SuperForm<Record<string, unknown>, any>;
@@ -97,7 +101,7 @@
 	};
 	export let cachedValue: any[] | undefined = undefined;
 
-	const { value, errors, constraints } = formFieldProxy(form, field);
+	const { value, errors, constraints } = formFieldProxy(form, valuePath);
 
 	let selected: (typeof options)[] = [];
 	let selectedValues: (string | undefined)[] = [];
@@ -141,7 +145,9 @@
 				const response = await fetch(endpoint, { cache: browserCache });
 				if (response.ok) {
 					const data = await response.json().then((res) => res?.results ?? res);
-					options = processOptions(data);
+					if (data.length > 0) {
+						options = processOptions(data);
+					}
 					const isRequired = mandatory || $constraints?.required;
 					const hasNoOptions = options.length === 0;
 					const isMissing = isRequired && hasNoOptions;
@@ -295,7 +301,7 @@
 	});
 </script>
 
-<div {hidden}>
+<div class={baseClass} {hidden}>
 	{#if label !== undefined}
 		{#if $constraints?.required || mandatory}
 			<label class="text-sm font-semibold" for={field}
@@ -337,7 +343,7 @@
 				<span class="text-indigo-600">{option.label}</span>
 				<span class="text-sm text-gray-500"> (suggested)</span>
 			{:else if translateOptions && option.label}
-				{safeTranslate(option.label)}
+				{m[toCamelCase(option.value)] ? safeTranslate(option.value) : safeTranslate(option.label)}
 			{:else}
 				{option.label || option}
 			{/if}

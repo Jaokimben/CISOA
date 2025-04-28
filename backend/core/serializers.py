@@ -158,8 +158,10 @@ class RiskMatrixImportExportSerializer(BaseModelSerializer):
 class VulnerabilityReadSerializer(BaseModelSerializer):
     folder = FieldsRelatedField()
     applied_controls = FieldsRelatedField(many=True)
+    assets = FieldsRelatedField(many=True)
     filtering_labels = FieldsRelatedField(["folder"], many=True)
     security_exceptions = FieldsRelatedField(many=True)
+    severity = serializers.CharField(source="get_severity_display")
 
     class Meta:
         model = Vulnerability
@@ -565,6 +567,7 @@ class AppliedControlReadSerializer(AppliedControlWriteSerializer):
     )  # type : get_type_display
     evidences = FieldsRelatedField(many=True)
     effort = serializers.CharField(source="get_effort_display")
+    control_impact = serializers.CharField(source="get_control_impact_display")
     cost = serializers.FloatField()
     filtering_labels = FieldsRelatedField(["folder"], many=True)
     assets = FieldsRelatedField(many=True)
@@ -593,6 +596,8 @@ class ComplianceAssessmentActionPlanSerializer(BaseModelSerializer):
     )  # type : get_type_display
     evidences = FieldsRelatedField(many=True)
     effort = serializers.CharField(source="get_effort_display")
+    control_impact = serializers.CharField(source="get_control_impact_display")
+    status = serializers.CharField(source="get_status_display")
     cost = serializers.FloatField()
 
     ranking_score = serializers.IntegerField(source="get_ranking_score")
@@ -631,6 +636,7 @@ class ComplianceAssessmentActionPlanSerializer(BaseModelSerializer):
             "category",
             "csf_function",
             "effort",
+            "control_impact",
             "cost",
             "ranking_score",
             "requirement_assessments",
@@ -670,6 +676,7 @@ class AppliedControlImportExportSerializer(BaseModelSerializer):
             "expiry_date",
             "link",
             "effort",
+            "control_impact",
             "cost",
             "evidences",
         ]
@@ -917,6 +924,7 @@ class EvidenceReadSerializer(BaseModelSerializer):
     folder = FieldsRelatedField()
     applied_controls = FieldsRelatedField(many=True)
     requirement_assessments = FieldsRelatedField(many=True)
+    filtering_labels = FieldsRelatedField(["folder"], many=True)
 
     class Meta:
         model = Evidence
@@ -1244,6 +1252,7 @@ class FindingReadSerializer(FindingWriteSerializer):
     applied_controls = FieldsRelatedField(many=True)
     filtering_labels = FieldsRelatedField(many=True)
     folder = FieldsRelatedField()
+    severity = serializers.CharField(source="get_severity_display")
 
     class Meta:
         model = Finding
@@ -1274,6 +1283,7 @@ class QuickStartSerializer(serializers.Serializer):
             if not folder_serializer.is_valid(raise_exception=True):
                 return None
             folder = folder_serializer.save()
+            Folder.create_default_ug_and_ra(folder)
 
         perimeter_data = {
             "folder": folder.id,
@@ -1394,3 +1404,44 @@ class IncidentReadSerializer(IncidentWriteSerializer):
     def get_timeline_entries(self, obj):
         """Returns a serialized list of timeline entries related to the incident."""
         return TimelineEntryReadSerializer(obj.timeline_entries.all(), many=True).data
+
+
+class TaskTemplateReadSerializer(BaseModelSerializer):
+    folder = FieldsRelatedField()
+    assets = FieldsRelatedField(many=True)
+    applied_controls = FieldsRelatedField(many=True)
+    compliance_assessments = FieldsRelatedField(many=True)
+    risk_assessments = FieldsRelatedField(many=True)
+    assigned_to = FieldsRelatedField(many=True)
+    next_occurrence = serializers.DateField(read_only=True)
+    last_occurrence_status = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = TaskTemplate
+        exclude = ["schedule"]
+
+
+class TaskTemplateWriteSerializer(BaseModelSerializer):
+    class Meta:
+        model = TaskTemplate
+        fields = "__all__"
+
+
+class TaskNodeReadSerializer(BaseModelSerializer):
+    task_template = FieldsRelatedField()
+    folder = FieldsRelatedField()
+    name = serializers.SerializerMethodField()
+    assigned_to = FieldsRelatedField(many=True)
+
+    def get_name(self, obj):
+        return obj.task_template.name if obj.task_template else ""
+
+    class Meta:
+        model = TaskNode
+        exclude = ["to_delete"]
+
+
+class TaskNodeWriteSerializer(BaseModelSerializer):
+    class Meta:
+        model = TaskNode
+        exclude = ["task_template"]

@@ -34,6 +34,8 @@
 	import { getModalStore } from '@skeletonlabs/skeleton';
 	import CreateModal from '$lib/components/Modals/CreateModal.svelte';
 
+	import { canPerformAction } from '$lib/utils/access-control';
+
 	export let data: PageData;
 	export let form: ActionData;
 
@@ -54,13 +56,14 @@
 		validationMethod: 'auto',
 		onUpdated: () => {
 			createModalCache.deleteCache(model.urlModel);
-			_form.form.update((current) => ({ ...current, evidences: undefined }));
+			_form.form.update((current) => ({
+				...current,
+				evidences: undefined,
+				timestamp: new Date().toISOString()
+			}));
 			refreshKey = !refreshKey;
-			window.location.reload(); // this is ugly but at least the UI is consistent for now
 		}
 	});
-
-	const formStore = _form.form;
 
 	const source = data.relatedModels['timeline-entries'].table;
 	const pagination = true;
@@ -131,12 +134,35 @@
 		refreshKey = !refreshKey;
 	}
 
-	$: if (form && form.newEvidence) {
-		forceRefresh();
-		$formStore.evidences
-			? $formStore.evidences.push(form.newEvidence)
-			: ($formStore.evidences = [form.newEvidence]);
+	let resetForm = true;
+
+	$: formStore = _form.form;
+
+	$: if (form?.newEvidence) {
+		refreshKey = !refreshKey;
+		resetForm = false;
+		_form.form.update(
+			(current: Record<string, any>) => ({
+				...current,
+				evidences: current.evidences
+					? [...current.evidences, form?.newEvidence]
+					: [form?.newEvidence]
+			}),
+			{ taint: false }
+		);
+		console.debug('formStore', $formStore);
 	}
+
+	const user = $page.data.user;
+	const canEditObject: boolean = canPerformAction({
+		user,
+		action: 'change',
+		model: data.model.name,
+		domain:
+			data.model.name === 'folder'
+				? data.data.id
+				: (data.data.folder?.id ?? data.data.folder ?? user.root_folder_id)
+	});
 </script>
 
 <div class="flex flex-col space-y-2">
@@ -144,80 +170,96 @@
 		<div
 			slot="widgets"
 			class="shadow-xl border-l border-t p-4 rounded bg-gradient-to-tl from-slate-50 to-white"
+			hidden={!canEditObject}
 		>
-			<!-- new record form -->
-			<h1 class="text-xl font-bold font-serif mb-2">{m.addTimelineEntry()}</h1>
-			<SuperForm
-				class="flex flex-col space-y-3"
-				action={formAction}
-				dataType={'json'}
-				enctype={'application/x-www-form-urlencoded'}
-				data={timelineForm}
-				{_form}
-				{invalidateAll}
-				let:form
-				let:data
-				let:initialData
-				validators={zod(schema)}
-				{...$$restProps}
-			>
-				<AutocompleteSelect
-					{form}
-					optionsEndpoint="incidents"
-					field="incident"
-					label={m.incident()}
-					hidden={initialData.incident}
-				/>
-				<Select
-					{form}
-					disableDoubleDash={true}
-					options={model.selectOptions['entry_type']}
-					field="entry_type"
-					label={m.entryType()}
-				/>
-				<TextField type="datetime-local" step="1" {form} field="timestamp" label={m.timestamp()} />
-				<TextField {form} field="entry" label={m.entry()} data-focusindex="0" />
-				<TextArea {form} field="observation" label={m.observation()} />
-				{#key refreshKey}
-					<div class="flex items-end justify-center">
-						<div class="w-full mr-2">
-							{#key refreshKey}
+			{#if canEditObject}
+				<!-- new record form -->
+				<h1 class="text-xl font-bold font-serif mb-2">{m.addTimelineEntry()}</h1>
+				<SuperForm
+					class="flex flex-col space-y-3"
+					action={formAction}
+					dataType={'json'}
+					enctype={'application/x-www-form-urlencoded'}
+					data={timelineForm}
+					{_form}
+					{invalidateAll}
+					let:form
+					let:data
+					let:initialData
+					validators={zod(schema)}
+					{...$$restProps}
+				>
+					<AutocompleteSelect
+						{form}
+						optionsEndpoint="incidents"
+						field="incident"
+						label={m.incident()}
+						hidden={initialData.incident}
+					/>
+					<Select
+						{form}
+						disableDoubleDash={true}
+						options={model.selectOptions['entry_type']}
+						field="entry_type"
+						label={m.entryType()}
+					/>
+					{#key refreshKey}
+						<TextField
+							type="datetime-local"
+							step="1"
+							{form}
+							field="timestamp"
+							label={m.timestamp()}
+						/>
+					{/key}
+					<TextField {form} field="entry" label={m.entry()} data-focusindex="0" />
+					<TextArea {form} field="observation" label={m.observation()} />
+					{#key refreshKey}
+						<div class="flex items-end justify-center">
+							<div class="w-full mr-2">
 								<AutocompleteSelect
 									{form}
 									multiple
 									optionsEndpoint="evidences"
 									field="evidences"
-									resetForm
+									{resetForm}
 									label={m.evidences()}
 								/>
-							{/key}
+							</div>
+							<button
+								class="btn bg-gray-300 h-11 w-10"
+								on:click={(_) => modalEvidenceCreateForm()}
+								type="button"><i class="fa-solid fa-plus text-sm" /></button
+							>
 						</div>
+					{/key}
+					<div class="flex flex-row justify-between space-x-4">
 						<button
-							class="btn bg-gray-300 h-11 w-10"
-							on:click={(_) => modalEvidenceCreateForm()}
-							type="button"><i class="fa-solid fa-plus text-sm" /></button
+							class="btn variant-filled-tertiary font-semibold w-full"
+							data-testid="reset-button"
+							type="button"
+							on:click={() => {
+								_form.reset();
+								_form.form.update((current) => ({
+									...current,
+									evidences: undefined,
+									timestamp: new Date().toISOString()
+								}));
+								refreshKey = !refreshKey;
+								resetForm = true;
+							}}>{m.cancel()}</button
+						>
+						<button
+							class="btn variant-filled-primary font-semibold w-full"
+							data-testid="save-button"
+							type="submit"
+							on:click={() => {
+								resetForm = true;
+							}}>{m.save()}</button
 						>
 					</div>
-				{/key}
-				<div class="flex flex-row justify-between space-x-4">
-					<button
-						class="btn variant-filled-tertiary font-semibold w-full"
-						data-testid="reset-button"
-						type="button"
-						on:click={() => {
-							_form.reset();
-							_form.form.update((current) => ({ ...current, evidences: undefined }));
-							refreshKey = !refreshKey;
-							window.location.reload();
-						}}>{m.cancel()}</button
-					>
-					<button
-						class="btn variant-filled-primary font-semibold w-full"
-						data-testid="save-button"
-						type="submit">{m.save()}</button
-					>
-				</div>
-			</SuperForm>
+				</SuperForm>
+			{/if}
 		</div>
 	</DetailView>
 

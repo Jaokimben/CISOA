@@ -162,6 +162,7 @@ export const AppliedControlSchema = z.object({
 	expiry_date: z.union([z.literal('').transform(() => null), z.string().date()]).nullish(),
 	link: z.string().url().optional().or(z.literal('')),
 	effort: z.string().optional().nullable(),
+	control_impact: z.number().optional().nullable(),
 	cost: z.number().multipleOf(0.000001).optional().nullable(),
 	folder: z.string(),
 	reference_control: z.string().optional().nullable(),
@@ -309,7 +310,8 @@ export const EvidenceSchema = z.object({
 	folder: z.string(),
 	applied_controls: z.preprocess(toArrayPreprocessor, z.array(z.string().optional())).optional(),
 	requirement_assessments: z.string().optional().array().optional(),
-	link: z.string().optional().nullable()
+	link: z.string().optional().nullable(),
+	filtering_labels: z.string().optional().array().optional()
 });
 
 export const GeneralSettingsSchema = z.object({
@@ -423,7 +425,8 @@ export const vulnerabilitySchema = z.object({
 	folder: z.string(),
 	ref_id: z.string().optional().default(''),
 	status: z.string().default('--'),
-	severity: z.number().default(-1),
+	severity: z.number().default(-1).optional(),
+	assets: z.string().uuid().optional().array().optional(),
 	applied_controls: z.string().uuid().optional().array().optional(),
 	security_exceptions: z.string().uuid().optional().array().optional(),
 	filtering_labels: z.string().optional().array().optional()
@@ -506,7 +509,7 @@ export const fearedEventsSchema = z.object({
 	...NameDescriptionMixin,
 	ref_id: z.string().optional(),
 	gravity: z.number().optional().default(-1),
-	is_selected: z.boolean().optional(),
+	is_selected: z.boolean().default(true),
 	justification: z.string().optional(),
 	ebios_rm_study: z.string(),
 	assets: z.string().uuid().optional().array().optional(),
@@ -521,7 +524,7 @@ export const roToSchema = z.object({
 	motivation: z.number().default(0).optional(),
 	resources: z.number().default(0).optional(),
 	activity: z.number().min(0).max(4).optional().default(0),
-	is_selected: z.boolean().optional().default(false),
+	is_selected: z.boolean().default(true),
 	justification: z.string().optional()
 });
 
@@ -540,7 +543,7 @@ export const StakeholderSchema = z.object({
 	residual_maturity: z.number().min(1).max(4).default(1).optional(),
 	residual_trust: z.number().min(1).max(4).default(1).optional(),
 	residual_criticality: z.number().min(0).max(16).default(0).optional(),
-	is_selected: z.boolean().optional(),
+	is_selected: z.boolean().default(true),
 	justification: z.string().optional()
 });
 
@@ -555,7 +558,7 @@ export const AttackPathSchema = z.object({
 	...NameDescriptionMixin,
 	strategic_scenario: z.string().uuid(),
 	stakeholders: z.string().uuid().optional().array().optional(),
-	is_selected: z.boolean().optional(),
+	is_selected: z.boolean().default(true),
 	justification: z.string().optional()
 });
 
@@ -565,7 +568,7 @@ export const operationalScenarioSchema = z.object({
 	threats: z.string().uuid().optional().array().optional(),
 	operating_modes_description: z.string(),
 	likelihood: z.number().optional().default(-1),
-	is_selected: z.boolean().optional().default(false),
+	is_selected: z.boolean().default(true),
 	justification: z.string().optional()
 });
 
@@ -627,12 +630,57 @@ export const TimelineEntrySchema = z.object({
 	entry: z.string(),
 	entry_type: z.string().default('observation'),
 	timestamp: z
-		.union([z.literal('').transform(() => null), z.string().datetime({ local: true })])
+		.string()
+		.datetime({ local: true })
 		.refine((val) => !val || new Date(val) <= new Date(), {
 			message: m.timestampCannotBeInTheFuture()
-		})
-		.default(() => new Date().toISOString()),
+		}),
 	observation: z.string().optional().nullable(),
+	evidences: z.string().uuid().optional().array().optional()
+});
+
+export const TaskTemplateSchema = z.object({
+	...NameDescriptionMixin,
+	folder: z.string(),
+	status: z.string().default('pending'),
+	assigned_to: z.string().optional().array().optional(),
+	ref_id: z.string().optional(),
+	task_date: z
+		.string()
+		.default(() => {
+			const date = new Date();
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+			const day = String(date.getDate()).padStart(2, '0');
+			return `${year}-${month}-${day}`;
+		})
+		.optional(),
+	is_recurrent: z.boolean().optional(),
+	enabled: z.boolean().default(true).optional(),
+	assets: z.string().uuid().optional().array().optional(),
+	applied_controls: z.string().uuid().optional().array().optional(),
+	compliance_assessments: z.string().uuid().optional().array().optional(),
+	risk_assessments: z.string().uuid().optional().array().optional(),
+	schedule: z
+		.object({
+			interval: z.number().min(1).positive().optional(),
+			frequency: z.string().optional(),
+			weeks_of_month: z.number().min(-1).max(4).array().optional(),
+			days_of_week: z.number().min(1).max(7).array().optional(),
+			months_of_year: z.number().min(1).max(12).array().optional(),
+			end_date: z.union([z.literal('').transform(() => undefined), z.string().optional()])
+		})
+		.default({
+			interval: 1,
+			frequency: 'DAILY'
+		})
+		.optional()
+});
+
+export const TaskNodeSchema = z.object({
+	due_date: z.string().optional(),
+	status: z.string().optional(),
+	observation: z.string().optional(),
 	evidences: z.string().uuid().optional().array().optional()
 });
 
@@ -680,7 +728,9 @@ const SCHEMA_MAP: Record<string, AnyZodObject> = {
 	findings: FindingSchema,
 	'findings-assessments': FindingsAssessmentSchema,
 	incidents: IncidentSchema,
-	'timeline-entries': TimelineEntrySchema
+	'timeline-entries': TimelineEntrySchema,
+	'task-templates': TaskTemplateSchema,
+	'task-nodes': TaskNodeSchema
 };
 
 export const modelSchema = (model: string) => {

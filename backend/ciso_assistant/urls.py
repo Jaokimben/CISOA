@@ -15,19 +15,14 @@ Including another URLconf
 """
 
 from django.urls import include, path
-from django.http import JsonResponse
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
 
-def health_check(request):
-    return JsonResponse({"status": "ok"})
-
 # beware of the order of url patterns, this can change de behavior in case of multiple matches and avoid giving identical paths that could cause conflicts
 urlpatterns = [
-    path("health/", health_check, name="health-check"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/schema/swagger/",
