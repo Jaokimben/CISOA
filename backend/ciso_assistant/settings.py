@@ -121,7 +121,7 @@ logger.info("DEBUG mode: %s", DEBUG)
 logger.info("CISO_ASSISTANT_URL: %s", CISO_ASSISTANT_URL)
 # ALLOWED_HOSTS should contain the backend address
 ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", "localhost,127.0.0.1,host.docker.internal"
+    "ALLOWED_HOSTS", "localhost,127.0.0.1,host.docker.internal,cisoa.onrender.com,.onrender.com"
 ).split(",")
 logger.info("ALLOWED_HOSTS: %s", ALLOWED_HOSTS)
 CSRF_TRUSTED_ORIGINS = [CISO_ASSISTANT_URL]
